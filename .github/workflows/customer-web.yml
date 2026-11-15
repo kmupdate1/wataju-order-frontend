@@ -1,0 +1,38 @@
+name: Customer Web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.12.1'
+      - run: python3 tests/contracts.py
+      - run: gradle --no-daemon jvmTest wasmJsBrowserDistribution
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wataju-order-web
+          path: build/dist/wasmJs/productionExecutable/
+          if-no-files-found: error
+      - run: |
+          python3 -m venv .qa
+          .qa/bin/pip install playwright==1.51.0
+          .qa/bin/playwright install --with-deps chromium
+          .qa/bin/python tests/browser.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: storefront-screens
+          path: build/browser-check/
+          if-no-files-found: ignore
