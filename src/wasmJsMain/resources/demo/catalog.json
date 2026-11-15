@@ -1,0 +1,7 @@
+{
+  "currency":"JPY",
+  "products":[
+    {"id":"sample-koikuchi","name":{"ja":"濃口醤油","en":"Koikuchi soy sauce"},"description":{"ja":"香りのある濃口タイプ。","en":"A full-bodied, aromatic soy sauce."},"size":"500 mL","unitPrice":650},
+    {"id":"sample-usukuchi","name":{"ja":"淡口醤油","en":"Usukuchi soy sauce"},"description":{"ja":"素材の色を生かす淡口タイプ。","en":"A light-colored soy sauce for delicate dishes."},"size":"500 mL","unitPrice":720}
+  ]
+}

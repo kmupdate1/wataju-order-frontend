@@ -1,0 +1,6 @@
+{
+  "appEntry": "./store.js",
+  "catalogUrl": "./demo/catalog.json",
+  "storeName": {"ja":"綿重商店","en":"Wataju Shoten"},
+  "defaultLocale": "ja"
+}

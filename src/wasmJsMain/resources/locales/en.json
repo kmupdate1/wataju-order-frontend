@@ -1,0 +1,8 @@
+{
+  "catalog":"Catalogue", "cart":"Basket", "review":"Review order", "search":"Search products",
+  "add":"Add to basket", "remove":"Remove", "empty":"Your basket is empty.", "noResults":"No matching products.",
+  "subtotal":"Estimated subtotal", "estimate":"Shipping, tax and final prices will be confirmed by the server.",
+  "back":"Back to basket", "retry":"Retry", "loading":"Loading products…", "error":"Could not load the catalogue.",
+  "system":"System theme", "light":"Light theme", "dark":"Dark theme", "decrease":"Decrease quantity",
+  "increase":"Increase quantity", "reviewNote":"This preview does not submit an order."
+}
