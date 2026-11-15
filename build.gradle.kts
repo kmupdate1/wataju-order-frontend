@@ -43,10 +43,13 @@ kotlin {
     sourceSets {
         wasmJsMain.get().resources.srcDir(prepareStoreFont.map { fontResources.get() })
         commonMain.dependencies {
+            implementation(project(":b3-foundation"))
+            implementation(project(":order-application"))
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         }
         commonTest.dependencies { implementation(kotlin("test")) }
         wasmJsMain.dependencies {
+            implementation(project(":b3-ui"))
             implementation(compose.material3)
             implementation("io.ktor:ktor-client-js:3.1.3")
         }

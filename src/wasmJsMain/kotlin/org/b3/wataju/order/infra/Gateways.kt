@@ -1,6 +1,8 @@
 package org.b3.wataju.order.infra
 
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.*
+import org.b3.wataju.order.application.QuoteExpired
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
@@ -42,12 +44,17 @@ class ServerOrders(base: String, private val language: String) : OrderGateway {
         setBody(json.encodeToString(request))
     }.bodyAsText())
 
-    override suspend fun place(quoteId: String, key: String): Order = json.decodeFromString(http.post("$root/orders") {
-        contentType(ContentType.Application.Json)
-        header("Idempotency-Key", key)
-        header(HttpHeaders.AcceptLanguage, language)
-        setBody(json.encodeToString(Confirmation(quoteId)))
-    }.bodyAsText())
+    override suspend fun place(quoteId: String, key: String): Order = try {
+        json.decodeFromString(http.post("$root/orders") {
+            contentType(ContentType.Application.Json)
+            header("Idempotency-Key", key)
+            header(HttpHeaders.AcceptLanguage, language)
+            setBody(json.encodeToString(Confirmation(quoteId)))
+        }.bodyAsText())
+    } catch (e: ResponseException) {
+        if (e.response.status.value == 410) throw QuoteExpired()
+        throw e
+    }
 }
 
 class TabJournal(namespace: String) : org.b3.wataju.order.application.CheckoutJournal {

@@ -58,6 +58,39 @@ class CheckoutTest {
         assertEquals(address, changed.account().destination)
     }
 
+    @Test fun unknownSubmissionBlocksEditingAndRestoresSameKey() = immediate {
+        val journal = MemoryJournal()
+        val orders = TestGateway()
+        var marker = ""
+        fun open() = OrderController(Checkout(orders, journal) { "key" }, { marker }, { marker = it })
+        val first = open()
+        first.review(mapOf("s" to 1), address)
+        assertIs<OrderState.Reviewing>(first.state)
+        assertFails { first.confirm() }
+        val resumed = open()
+        assertIs<OrderState.AwaitingReceipt>(resumed.state)
+        assertFails { resumed.edit() }
+        assertFails { resumed.review(mapOf("s" to 2), address) }
+        assertEquals("receipt", resumed.confirm().id)
+        assertIs<OrderState.Complete>(resumed.state)
+        assertEquals("", marker)
+        assertNull(journal.load())
+    }
+
+    @Test fun expiredQuoteReopensEditingAndClearsRetryMarker() = immediate {
+        val journal = MemoryJournal()
+        val orders = object : OrderGateway by TestGateway() {
+            override suspend fun place(quoteId: String, key: String): Order = throw QuoteExpired()
+        }
+        var marker = "obsolete"
+        val controller = OrderController(Checkout(orders, journal) { "new" }, { marker }, { marker = it })
+        controller.review(mapOf("s" to 1), address)
+        assertFailsWith<QuoteExpired> { controller.confirm() }
+        assertIs<OrderState.Editing>(controller.state)
+        assertEquals("", marker)
+        assertNull(journal.load())
+    }
+
     private class MemoryJournal : CheckoutJournal {
         private var value: PendingOrder? = null
         override fun load() = value

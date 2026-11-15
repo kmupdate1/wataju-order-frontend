@@ -1,6 +1,7 @@
 """Smoke-test deployed Wasm assets, font loading and locale-specific requests."""
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import json
 from pathlib import Path
 from threading import Thread
 
@@ -30,6 +31,21 @@ try:
             page.screenshot(path=shots / f"{lang}.png")
             assert not errors, errors
             page.close()
+        # Exercise the shared navigation through the same-view-width mobile shell.
+        mobile = browser.new_page(locale="ja", viewport={"width": 390, "height": 844})
+        settings = json.loads((dist / "config.json").read_text())
+        settings["orderApi"] = "/api/customer"
+        mobile.route("**/config.json", lambda route: route.fulfill(json=settings))
+        mobile.route("**/api/customer/orders", lambda route: route.fulfill(json=[]))
+        with mobile.expect_response(lambda r: r.url.endswith("/demo/catalog.json")):
+            mobile.goto(f"http://127.0.0.1:{server.server_port}/")
+        mobile.locator("canvas").wait_for(state="visible")
+        # The fourth of five equally spaced navigation items opens order history.
+        with mobile.expect_request(lambda r: r.url.endswith("/api/customer/orders"), timeout=15000):
+            for _ in range(3):
+                mobile.wait_for_timeout(300)
+                mobile.mouse.click(273, 802)
+        mobile.close()
         browser.close()
 finally:
     server.shutdown()

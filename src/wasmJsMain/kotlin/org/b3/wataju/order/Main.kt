@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeViewport
 import org.b3.wataju.shared.ui.*
+import org.b3.wataju.order.infra.StoreServices
 import org.b3.wataju.order.ui.*
 import kotlinx.browser.document
 import kotlinx.coroutines.CancellationException
@@ -27,8 +28,8 @@ fun main() {
 @OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
 private fun Store() {
     var config by remember { mutableStateOf<StoreConfig?>(null) }
-    var lang by remember { mutableStateOf(preference("wataju.locale").takeIf { it in listOf("ja","en") }
-        ?: browserLanguage().substringBefore('-').lowercase()) }
+    var lang by remember { mutableStateOf(storeLanguages.match(preference("wataju.locale"))
+        ?: storeLanguages.match(browserLanguage()).orEmpty()) }
     var theme by remember { mutableStateOf(preference("wataju.theme").takeIf { it in listOf("dark","light") } ?: "system") }
     var attempt by remember { mutableIntStateOf(0) }
     var strings by remember { mutableStateOf(emptyMap<String,String>()) }
@@ -41,7 +42,7 @@ private fun Store() {
         try {
             val settings = loadConfig()
             config = settings
-            if (lang !in listOf("ja","en")) { lang = settings.defaultLocale; return@LaunchedEffect }
+            if (lang.isEmpty()) { lang = storeLanguages.select(null, null, settings.defaultLocale); return@LaunchedEffect }
             if (family == null) {
                 val bytes: ByteArray = http.get(resolveUrl("fonts/NotoSansJP.ttf")).body()
                 family = FontFamily(Font("NotoSansJP", bytes, variationSettings = FontVariation.Settings(FontVariation.weight(400))))
@@ -67,7 +68,8 @@ private fun Store() {
                     } else CircularProgressIndicator()
                 }
             } else {
-                Storefront(items, config!!, Display(strings::getValue, lang, config!!.defaultLocale), theme,
+                val services = remember(config, items, lang) { StoreServices(config!!, items, lang) }
+                Storefront(items, config!!, services, Display(strings::getValue, lang, config!!.defaultLocale), theme,
                     onLanguage = { lang = it; savePreference("wataju.locale", it) },
                     onTheme = { theme = it; savePreference("wataju.theme", it) })
             }

@@ -37,6 +37,8 @@ python3 tests/contracts.py
 
 ## 設計と保存範囲
 
+[AgriOS との対応、Gradle モジュールの依存、別プロジェクトからの利用方法](docs/architecture.md)。
+
 | 責務 | 実装 |
 | --- | --- |
 | Domain / commonMain | 配送先、SKU と数量の照合、見積もり・注文行のスナップショット。Compose・HTTP に依存しない |

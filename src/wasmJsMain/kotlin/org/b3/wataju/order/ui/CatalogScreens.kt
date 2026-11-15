@@ -1,5 +1,6 @@
 package org.b3.wataju.order.ui
 
+import org.b3.dev.ui.AdaptiveGrid
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -48,21 +49,13 @@ fun Catalogue(catalog: Catalog, d: Display, query: String, search: (String) -> U
         listOf(d.name(p.name), d.name(p.description), p.size, p.id).any { it.contains(query.trim(), true) }
     }
     if (matches.isEmpty()) Text(d.text("noResults"))
-    BoxWithConstraints {
-        val columns = when { maxWidth >= 900.dp -> 3; maxWidth >= 570.dp -> 2; else -> 1 }
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            matches.chunked(columns).forEach { group ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    group.forEach { p ->
-                        Card(onClick = { details(p) }, modifier = Modifier.weight(1f)) {
-                            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                ProductInfo(p, catalog.currency, d)
-                                Text(d.text("details"), color = MaterialTheme.colorScheme.primary)
-                            }
-                        }
-                    }
-                    repeat(columns - group.size) { Spacer(Modifier.weight(1f)) }
-                }
+    AdaptiveGrid(matches, columnsFor = { width ->
+        when { width >= 900.dp -> 3; width >= 570.dp -> 2; else -> 1 }
+    }) { product, modifier ->
+        Card(onClick = { details(product) }, modifier = modifier) {
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                ProductInfo(product, catalog.currency, d)
+                Text(d.text("details"), color = MaterialTheme.colorScheme.primary)
             }
         }
     }

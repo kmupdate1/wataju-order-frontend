@@ -3,17 +3,6 @@ package org.b3.wataju.order
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class StoreConfig(
-    val catalogUrl: String,
-    val storeName: Map<String, String>,
-    val defaultLocale: String = "ja",
-    val orderApi: String? = null,
-    val loginUrl: String? = null,
-    val storeId: String = "wataju",
-    val notices: List<Map<String, String>> = emptyList()
-)
-
-@Serializable
 data class Catalog(val currency: String, val products: List<Product>) {
     fun validated(): Catalog = apply {
         require(currency.matches(Regex("[A-Z]{3}")))
@@ -32,7 +21,3 @@ data class Product(
     val unitPrice: Long,
     val imageUrl: String? = null
 )
-
-fun Map<String, String>.localized(language: String, fallback: String): String =
-    listOf(language, fallback, "ja", "en").firstNotNullOfOrNull { get(it)?.takeIf(String::isNotBlank) }
-        ?: values.firstOrNull(String::isNotBlank).orEmpty()
