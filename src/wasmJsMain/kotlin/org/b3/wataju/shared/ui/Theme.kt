@@ -37,3 +37,25 @@ val DarkPalette = darkColorScheme(
     error = Color(0xFFFFB4AB),
 )
 
+
+internal fun storeTypography(font: androidx.compose.ui.text.font.FontFamily?): Typography {
+    val base = Typography()
+    if (font == null) return base
+    return Typography(
+        displayLarge = base.displayLarge.copy(fontFamily = font),
+        displayMedium = base.displayMedium.copy(fontFamily = font),
+        displaySmall = base.displaySmall.copy(fontFamily = font),
+        headlineLarge = base.headlineLarge.copy(fontFamily = font),
+        headlineMedium = base.headlineMedium.copy(fontFamily = font),
+        headlineSmall = base.headlineSmall.copy(fontFamily = font),
+        titleLarge = base.titleLarge.copy(fontFamily = font),
+        titleMedium = base.titleMedium.copy(fontFamily = font),
+        titleSmall = base.titleSmall.copy(fontFamily = font),
+        bodyLarge = base.bodyLarge.copy(fontFamily = font),
+        bodyMedium = base.bodyMedium.copy(fontFamily = font),
+        bodySmall = base.bodySmall.copy(fontFamily = font),
+        labelLarge = base.labelLarge.copy(fontFamily = font),
+        labelMedium = base.labelMedium.copy(fontFamily = font),
+        labelSmall = base.labelSmall.copy(fontFamily = font),
+    )
+}

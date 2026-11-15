@@ -12,6 +12,8 @@ gradle jvmTest wasmJsBrowserDistribution
 python3 tests/contracts.py
 ```
 
+初回の Web ビルドで Noto Sans JP を指定リビジョンから取得し、SHA-256 を照合します。フォントと SIL Open Font License を配布物に同梱するため、実行時は外部フォントサービスへの接続は不要です。
+
 配布物は `build/dist/wasmJs/productionExecutable/`。静的 HTTP サーバーから配信し、Wasm の MIME は `application/wasm` に設定します。
 
 ## 操作

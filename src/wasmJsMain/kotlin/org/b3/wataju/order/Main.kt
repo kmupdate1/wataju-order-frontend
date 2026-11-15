@@ -2,15 +2,14 @@ package org.b3.wataju.order
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.platform.Font
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeViewport
 import org.b3.wataju.shared.ui.*
@@ -32,6 +31,7 @@ private fun Store() {
     var attempt by remember { mutableIntStateOf(0) }
     var strings by remember { mutableStateOf(emptyMap<String,String>()) }
     var catalog by remember { mutableStateOf<Catalog?>(null) }
+    var family by remember { mutableStateOf<FontFamily?>(null) }
     var failed by remember { mutableStateOf(false) }
     LaunchedEffect(lang, attempt) {
         failed = false
@@ -40,6 +40,10 @@ private fun Store() {
             val settings = loadConfig()
             config = settings
             if (lang !in listOf("ja","en")) { lang = settings.defaultLocale; return@LaunchedEffect }
+            if (family == null) {
+                val bytes: ByteArray = http.get(resolveUrl("fonts/NotoSansJP.ttf")).body()
+                family = FontFamily(Font("NotoSansJP", bytes))
+            }
             strings = loadStrings(lang)
             setPage(lang, settings.storeName.localized(lang, settings.defaultLocale))
             catalog = loadCatalog(settings, lang)
@@ -49,7 +53,8 @@ private fun Store() {
     }
 
     val dark = theme == "dark" || (theme == "system" && isSystemInDarkTheme())
-    MaterialTheme(colorScheme = if (dark) DarkPalette else LightPalette) {
+    val typography = remember(family) { storeTypography(family) }
+    MaterialTheme(colorScheme = if (dark) DarkPalette else LightPalette, typography = typography) {
         Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             val items = catalog
             if (items == null) {
