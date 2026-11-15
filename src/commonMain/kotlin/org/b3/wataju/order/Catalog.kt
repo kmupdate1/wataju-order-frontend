@@ -6,7 +6,11 @@ import kotlinx.serialization.Serializable
 data class StoreConfig(
     val catalogUrl: String,
     val storeName: Map<String, String>,
-    val defaultLocale: String = "ja"
+    val defaultLocale: String = "ja",
+    val orderApi: String? = null,
+    val loginUrl: String? = null,
+    val storeId: String = "wataju",
+    val notices: List<Map<String, String>> = emptyList()
 )
 
 @Serializable
@@ -25,7 +29,8 @@ data class Product(
     val name: Map<String, String>,
     val description: Map<String, String>,
     val size: String,
-    val unitPrice: Long
+    val unitPrice: Long,
+    val imageUrl: String? = null
 )
 
 fun Map<String, String>.localized(language: String, fallback: String): String =

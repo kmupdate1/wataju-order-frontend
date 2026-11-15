@@ -8,6 +8,7 @@ plugins {
 }
 
 kotlin {
+    jvm() // Runs shared order rules on the JVM.
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser { commonWebpackConfig { outputFileName = "store.js" } }
@@ -15,10 +16,12 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.material3)
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-            implementation("io.ktor:ktor-client-core:3.1.3")
         }
-        wasmJsMain.dependencies { implementation("io.ktor:ktor-client-js:3.1.3") }
+        commonTest.dependencies { implementation(kotlin("test")) }
+        wasmJsMain.dependencies {
+            implementation(compose.material3)
+            implementation("io.ktor:ktor-client-js:3.1.3")
+        }
     }
 }

@@ -8,14 +8,14 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
 import kotlinx.serialization.json.Json
 
-private val http = HttpClient {
+internal val http = HttpClient {
     expectSuccess = true
     install(HttpTimeout) { requestTimeoutMillis = 15000 }
 }
-private val json = Json { ignoreUnknownKeys = true }
+internal val json = Json { ignoreUnknownKeys = true }
 
 @JsFun("(path) => { const u = new URL(path, document.baseURI); if (!['http:', 'https:'].includes(u.protocol)) throw new Error('URL'); return u.href; }")
-private external fun resolveUrl(path: String): String
+internal external fun resolveUrl(path: String): String
 
 @JsFun("(key) => { try { return localStorage.getItem(key) || ''; } catch { return ''; } }")
 external fun preference(key: String): String

@@ -1,4 +1,4 @@
-package org.b3.wataju.order
+package org.b3.wataju.shared.ui
 
 import androidx.compose.material3.*
 import androidx.compose.ui.graphics.Color

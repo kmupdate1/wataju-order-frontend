@@ -1,6 +1,18 @@
 {
   "appEntry": "./store.js",
   "catalogUrl": "./demo/catalog.json",
-  "storeName": {"ja":"綿重商店","en":"Wataju Shoten"},
-  "defaultLocale": "ja"
+  "storeName": {
+    "ja": "綿重商店",
+    "en": "Wataju Shoten"
+  },
+  "defaultLocale": "ja",
+  "storeId": "wataju",
+  "orderApi": null,
+  "loginUrl": null,
+  "notices": [
+    {
+      "ja": "商品一覧から醤油の規格・価格をご覧いただけます。",
+      "en": "Explore soy sauce varieties, sizes and prices in the catalogue."
+    }
+  ]
 }
