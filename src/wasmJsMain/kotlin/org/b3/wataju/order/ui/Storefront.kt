@@ -5,6 +5,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.ktor.client.plugins.ResponseException
@@ -21,6 +25,21 @@ private enum class Screen(val label: String) {
     Review("review"), Complete("complete"), History("history"), Account("account")
 }
 private val tabs = listOf(Screen.Home, Screen.Catalog, Screen.Cart, Screen.History, Screen.Account)
+
+// Material navigation symbols are vector paths and render independently of font coverage.
+@Composable
+private fun Screen.icon() = remember(this) {
+    val path = when (this) {
+        Screen.Home -> "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+        Screen.Catalog -> "M3 3h8v8H3z M13 3h8v8h-8z M3 13h8v8H3z M13 13h8v8h-8z"
+        Screen.Cart -> "M2 3h3l1 3h15l-3 8H8l-1 2h11v2H6l-1-2 2-4-3-7H2z M7 19h3v3H7z M16 19h3v3h-3z"
+        Screen.History -> "M3 5h18v2H3z M3 11h18v2H3z M3 17h18v2H3z"
+        else -> "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 20v-2c0-5 16-5 16 0v2z"
+    }
+    ImageVector.Builder(name, 24.dp, 24.dp, 24f, 24f).apply {
+        addPath(pathData = PathParser().parsePathString(path).toNodes(), fill = SolidColor(Color.Black))
+    }.build()
+}
 
 @Composable
 fun Storefront(catalog: Catalog, config: StoreConfig, d: Display, theme: String,
@@ -211,7 +230,7 @@ fun Storefront(catalog: Catalog, config: StoreConfig, d: Display, theme: String,
             }
             if (compact) NavigationBar { tabs.forEach { tab ->
                 NavigationBarItem(selected = tab == page, onClick = { navigate(tab) }, enabled = !busy && !submitted,
-                    icon = { Text(when(tab) { Screen.Home -> "⌂"; Screen.Catalog -> "▦"; Screen.Cart -> "▤"; Screen.History -> "◷"; else -> "○" }) },
+                    icon = { Icon(tab.icon(), contentDescription = null) },
                     label = { Text(t(tab.label), maxLines = 1) })
             } }
         }

@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.platform.Font
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -23,6 +24,7 @@ fun main() {
 }
 
 @Composable
+@OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
 private fun Store() {
     var config by remember { mutableStateOf<StoreConfig?>(null) }
     var lang by remember { mutableStateOf(preference("wataju.locale").takeIf { it in listOf("ja","en") }
@@ -42,7 +44,7 @@ private fun Store() {
             if (lang !in listOf("ja","en")) { lang = settings.defaultLocale; return@LaunchedEffect }
             if (family == null) {
                 val bytes: ByteArray = http.get(resolveUrl("fonts/NotoSansJP.ttf")).body()
-                family = FontFamily(Font("NotoSansJP", bytes))
+                family = FontFamily(Font("NotoSansJP", bytes, variationSettings = FontVariation.Settings(FontVariation.weight(400))))
             }
             strings = loadStrings(lang)
             setPage(lang, settings.storeName.localized(lang, settings.defaultLocale))
