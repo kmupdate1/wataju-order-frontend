@@ -10,5 +10,5 @@ kotlin {
     jvm()
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs { browser() }
-    sourceSets.commonMain.dependencies { api(compose.material3) }
+    sourceSets.commonMain.dependencies { api(compose.material3); api(project(":foundation-ui")) }
 }

@@ -1,3 +1,7 @@
+# 現行foundation統合
+
+現在の起動・View・ライフサイクル構成は [foundation-integration.md](foundation-integration.md) を参照してください。以下は抽出元の境界とAgriOS比較の記録です。
+
 # B3 共通部品と綿重注文の境界
 
 設計の参照元は AgriOS の [feature/cloud-ready-dashboard、a30e2c3](https://github.com/kmupdate1/agrios_ui_of_kmp/tree/a30e2c3addb1f426a45ee37425f4bc693e26cb1f)。ブランチ先端のコミット日時で比較して選択した。

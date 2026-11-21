@@ -2,13 +2,15 @@
 
 Kotlin Multiplatform、Compose Multiplatform、Ktor Client による顧客向けアプリ。初期設定はデモ店舗です。ブラウザー内で注文の流れを試せます。
 
+[foundation の採用範囲・固定コミット・更新手順](docs/foundation-integration.md)。起動、ライフサイクル、View契約、テーマ階層、Localizationに共通基盤を使用しています。
+
 ## 起動と検証
 
 JDK 21、Gradle 8.12.1、WasmGC 対応ブラウザーを使います。
 
 ```sh
-gradle wasmJsBrowserDevelopmentRun
-gradle jvmTest wasmJsBrowserDistribution
+./gradlew wasmJsBrowserDevelopmentRun
+./gradlew jvmTest wasmJsBrowserDistribution
 python3 tests/contracts.py
 ```
 
@@ -50,7 +52,7 @@ python3 tests/contracts.py
 
 言語・テーマ・SKU 数量は localStorage に保存します。配送先を含む未確定の注文は sessionStorage に置き、完了・確認取り消し時に消去します。デモの既定配送先と履歴もタブ内に限定します。本番の注文履歴は API から読みます。
 
-画面翻訳は [ja.json](src/wasmJsMain/resources/locales/ja.json) と [en.json](src/wasmJsMain/resources/locales/en.json)。保存済み選択 → 端末言語 → 設定の既定値で決定。商品翻訳は選択言語 → 店舗既定言語 → 利用可能な翻訳にフォールバックします。
+画面翻訳は [日本語XML](src/commonMain/composeResources/values-ja/strings.xml) と [英語XML](src/commonMain/composeResources/values/strings.xml)。Web用JSONはビルドで生成します。保存済み選択 → 端末言語 → 設定の既定値で決定。商品翻訳は選択言語 → 店舗既定言語 → 利用可能な翻訳にフォールバックします。
 
 ## サーバーとの契約
 

@@ -1,0 +1,171 @@
+{
+  "repository": "https://github.com/BlueBikeBase-Inc/kmp-application-foundation",
+  "commit": "36bd2c7f0b87528fb867db94dd70ca18f96ff717",
+  "branch": "feature/core-lifecycle",
+  "files": [
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/annotation/B3Dsl.kt",
+      "sha256": "2bcf37b0528001da9cd51368fa7fc066415984f39cd9f8739d7e5fc7370a3d66"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/FeatureKey.kt",
+      "sha256": "503782188090a764d7322984941856688a541a01e3c475bffe23319726efc8bc"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/ApplicationExtensions.kt",
+      "sha256": "5ef119ff63f29c41ee589340a5e7bd781ac243b7a70565b76b155ba8ee970448"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/FeatureRegistry.kt",
+      "sha256": "01d354cab61e60902284dd0f992060f36bf74932e43018dd5ae845069e8398b1"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/Feature.kt",
+      "sha256": "0bf1788ff2cc3555f135b5827b4bd3d97a14c05a3bd3c75baf28ad2d36eabd76"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/Application.kt",
+      "sha256": "e8c50bd93a7b037085cf1541221d56265db696320131284070f0d15a215f019e"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/application/ApplicationLifecycleParticipant.kt",
+      "sha256": "31adcca9d19f67426655be0716543a0450edfd927064d8260f017ebffe77fcbb"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/Creatable.kt",
+      "sha256": "1d7fa95d4bfad5a4f2e5085f0ff00ef706accd53987fa14dc08c5c8eefe956ce"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/Startable.kt",
+      "sha256": "ad03bb832d1179495abc351d5f44848e2a07deec8d95f543793c9afef2229621"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/LifecycleState.kt",
+      "sha256": "f872e1165291c52d92a07456494c4e4d569221bf4a22e881a5e7199f966f3fb5"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/LifecycleController.kt",
+      "sha256": "3eb35d2b9def2d3811c2af92a93f5a3d9c4d938ff9426e4b620a8394d8cefea7"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/Destroyable.kt",
+      "sha256": "6d93d1e9794d46a1c2210f650cc809bf7a930bffa246d76e7ab307598958ead9"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/Stoppable.kt",
+      "sha256": "ef1a506bc401f4f4f60c9f28a67cb56d2b2f317c4e793e7235a5a10d09520c85"
+    },
+    {
+      "path": "core/src/commonMain/kotlin/org/b3/foundation/runtime/Lifecycle.kt",
+      "sha256": "bb914af60e38cb9a1aaa4e9db55cf5eb12ea08c7b213b1ca7acd2ff106201665"
+    },
+    {
+      "path": "feature/localization/src/commonMain/kotlin/org/b3/foundation/localization/Localization.kt",
+      "sha256": "b50b4c5846049f53ee675e67f9dc1f7fe031cf9711967f0b2b8f5679da53e351"
+    },
+    {
+      "path": "feature/localization/src/commonMain/kotlin/org/b3/foundation/localization/LocalizationService.kt",
+      "sha256": "f3a1adece58e2a845d7efaa8253ad5f24922f1c9d132cb571f0bc3203e95faf4"
+    },
+    {
+      "path": "feature/localization/src/commonMain/kotlin/org/b3/foundation/localization/LocalizationState.kt",
+      "sha256": "e0702794007230a2acc5d4f9e8fde32473d3507a199676bde6888814e91c7ab1"
+    },
+    {
+      "path": "feature/localization/src/commonMain/kotlin/org/b3/foundation/localization/LocalizationConfiguration.kt",
+      "sha256": "750e95f288db76cdd20c32e98a22e5b4f233834903da4ee37d942f04da674ca8"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/UiApplication.kt",
+      "sha256": "69cf1c719381eb2c1008c3e1b97fff1ef8f86b424215c8092caedb24fd07566d"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/UI.kt",
+      "sha256": "04a729ccb1bafd3e8709483ef709e72fdd38ca1473f70a523796ef5a2bd0c64c"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/UiConfiguration.kt",
+      "sha256": "79b56684f144bc7b188dcb8f162f6aabd5a19baf93d0edefe48e1306c03967a3"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/UiConfigurationExtensions.kt",
+      "sha256": "211436bf13264e75f9bb3e7c17e593b9cde7a5ffdc83710aea781f5fd043e4bb"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/localization/LocalizationLayer.kt",
+      "sha256": "bfdc673d4efe8ac8541319375a20e080e3aeeebf84998887a527a45c3324da6d"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/localization/LocalLocalization.kt",
+      "sha256": "261ad6f22e4f3546dfcad594db839daa370dffdf73906b1d169981e22ab3416f"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/view/View.kt",
+      "sha256": "897eb49f59cf6c75be7ee18a988fe995c01267f4bd47f80d320426cf80b6eecc"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/view/ViewLayer.kt",
+      "sha256": "1c4295e6869c992519fff8c75122f17230587e983994dfbace7e136c5caa0f7f"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/view/ViewHierarchy.kt",
+      "sha256": "f0650dbf68d9ba7d223753471697b01671f94e5a465d1285c18283c7c9e473de"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/view/Renderable.kt",
+      "sha256": "c9392ad3feb08b448769e5dd2b15bb015fc7ca52c266662b0e17feeec4e1b97c"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/view/ViewId.kt",
+      "sha256": "634af0dde6b532f00656b257bdd47645f29fcf704c59ba66f3f990f7c83289ea"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/Container.kt",
+      "sha256": "b885087538566889d1fd32d5a8d6a76349ff0def0ae701cdb2a77ebd69d962d8"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/RowContainer.kt",
+      "sha256": "0fd2f6d7603d4934a2b585ca46385f8f8dceee2657b4f12c73be7bf7d0611683"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/ScaffoldContainer.kt",
+      "sha256": "e2c86f7b9506247714f1fc76eddb1b40228b07b71d18f616bd381448d47e6fd4"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/ColumnContainer.kt",
+      "sha256": "005ac803d3b8100e43cc3b9bd86dc789e75cf605f58141ef40dc0f3ed68577f1"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/BottomBarContainer.kt",
+      "sha256": "d0adee7f4cdeac4a692e02fde3fc5fcbf5e47f6d29dca697e0de3e66a1b47450"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/BoxContainer.kt",
+      "sha256": "160c4e56ddccd026e9abec6574275480123b52d01ad3208839f6634055c85c1c"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/container/TopBarContainer.kt",
+      "sha256": "a93f77449d5bee9d90fcf378466d96d2cc1ed8daff911ae51beb825bbf6b2f5d"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/theme/ThemeConfiguration.kt",
+      "sha256": "e82bd070f789a0c99a2a51384a03874ff111ab671069df9f355c344388848e82"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/theme/MaterialThemeLayer.kt",
+      "sha256": "c57c65474d34cefe4dc04f2f685d8c4d9ff3f0fc7a40db5158510184cce0794a"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/runtime/BindLifecycle.kt",
+      "sha256": "3f1e50ac949db79328214940a21f92d202b037c2fbec579ab74e667ed948d667"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/surface/SurfaceConfiguration.kt",
+      "sha256": "29b45a4529e53b34c07e7354a3d7aa43c5969c59dba24e3ca709ef6413a214fb"
+    },
+    {
+      "path": "ui/src/commonMain/kotlin/org/b3/foundation/ui/surface/SurfaceLayer.kt",
+      "sha256": "20c1acfc2890333275055421aca7138805a84edf82e1b421782a4a3cf94ec74e"
+    }
+  ]
+}

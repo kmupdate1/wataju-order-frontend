@@ -19,6 +19,7 @@ jobs:
         with:
           gradle-version: '8.12.1'
       - run: python3 tests/contracts.py
+      - run: python3 tests/foundation.py
       - run: gradle --no-daemon jvmTest wasmJsBrowserDistribution
       - uses: actions/upload-artifact@v4
         with:
@@ -30,6 +31,8 @@ jobs:
           .qa/bin/pip install playwright==1.51.0
           .qa/bin/playwright install --with-deps chromium
           .qa/bin/python tests/browser.py
+          sudo apt-get install -y tesseract-ocr
+          .qa/bin/python tests/browser_flow.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:

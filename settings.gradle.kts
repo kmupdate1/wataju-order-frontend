@@ -3,3 +3,5 @@ dependencyResolutionManagement { repositories { mavenCentral(); google() } }
 rootProject.name = "wataju-order"
 
 include(":b3-foundation", ":b3-ui", ":order-application")
+
+include(":foundation-core", ":foundation-localization", ":foundation-ui")

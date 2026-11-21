@@ -1,12 +1,13 @@
 """Check shipped runtime fixtures and translation coverage using Python 3."""
 import json
 import re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 resources = root / "src/wasmJsMain/resources"
 ui = "\n".join(p.read_text() for p in (root / "src/wasmJsMain/kotlin").rglob("*.kt"))
-languages = [json.loads((resources / f"locales/{lang}.json").read_text()) for lang in ("ja", "en")]
+languages = [{entry.attrib["name"]: entry.text for entry in ET.parse(root / f"src/commonMain/composeResources/{folder}/strings.xml").getroot()} for folder in ("values-ja", "values")]
 assert languages[0].keys() == languages[1].keys()
 for strings in languages:
     assert all(isinstance(s, str) and s.strip() for s in strings.values())

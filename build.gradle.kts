@@ -1,4 +1,6 @@
 import java.net.URI
+import javax.xml.parsers.DocumentBuilderFactory
+import groovy.json.JsonOutput
 import java.security.MessageDigest
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -33,6 +35,30 @@ val prepareStoreFont by tasks.registering {
     }
 }
 
+// Compose Resources XML is the single source of UI messages. Compose 1.8 cannot
+// publicly construct an explicit ResourceEnvironment, so generate the Web locale
+// dictionaries from those same XML inputs for persisted in-app language selection.
+val localeResources = layout.buildDirectory.dir("generated/storeLocales")
+val prepareStoreLocales by tasks.registering {
+    val inputsByLanguage = mapOf("en" to "values", "ja" to "values-ja")
+        .mapValues { (_, folder) -> file("src/commonMain/composeResources/$folder/strings.xml") }
+    inputs.files(inputsByLanguage.values)
+    outputs.dir(localeResources)
+    doLast {
+        inputsByLanguage.forEach { (language, source) ->
+            val document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(source)
+            val entries = document.getElementsByTagName("string")
+            val messages = (0 until entries.length).associate { index ->
+                val entry = entries.item(index)
+                entry.attributes.getNamedItem("name").nodeValue to entry.textContent
+            }
+            val output = localeResources.get().file("locales/$language.json").asFile
+            output.parentFile.mkdirs()
+            output.writeText(JsonOutput.toJson(messages))
+        }
+    }
+}
+
 kotlin {
     jvm() // Runs shared order rules on the JVM.
     @OptIn(ExperimentalWasmDsl::class)
@@ -42,8 +68,10 @@ kotlin {
     }
     sourceSets {
         wasmJsMain.get().resources.srcDir(prepareStoreFont.map { fontResources.get() })
+        wasmJsMain.get().resources.srcDir(prepareStoreLocales.map { localeResources.get() })
         commonMain.dependencies {
             implementation(project(":b3-foundation"))
+            implementation(compose.components.resources)
             implementation(project(":order-application"))
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
         }

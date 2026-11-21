@@ -1,6 +1,7 @@
 package org.b3.wataju.order.ui
 
-import org.b3.dev.ui.AdaptiveGrid
+import org.b3.dev.ui.AdaptiveGridView
+import org.b3.foundation.ui.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -20,43 +21,49 @@ class Display(val text: (String) -> String, val lang: String, val fallback: Stri
     fun money(value: Long, currency: String) = formatMoney(value.toDouble(), currency, lang)
 }
 
-@Composable
-private fun ProductImage(product: Product, d: Display) {
-    val url = product.imageUrl ?: return
-    val bitmap by produceState<ImageBitmap?>(null, url) {
-        value = null
-        try {
-            val bytes: ByteArray = http.get(resolveUrl(url)).body()
-            value = org.jetbrains.skia.Image.makeFromEncoded(bytes).toComposeImageBitmap()
-        } catch (e: CancellationException) { throw e }
-        catch (_: Exception) { value = null }
-    }
-    bitmap?.let { Image(it, d.name(product.name), Modifier.fillMaxWidth().height(150.dp), contentScale = ContentScale.Fit) }
-}
-
-@Composable
-fun ProductInfo(p: Product, currency: String, d: Display) {
-    ProductImage(p, d)
-    Text(d.name(p.name), style = MaterialTheme.typography.titleLarge)
-    Text(d.name(p.description))
-    Text(p.size + " · " + d.money(p.unitPrice, currency))
-}
-
-@Composable
-fun Catalogue(catalog: Catalog, d: Display, query: String, search: (String) -> Unit, details: (Product) -> Unit) {
-    OutlinedTextField(query, search, label = { Text(d.text("search")) }, singleLine = true)
-    val matches = catalog.products.filter { p ->
-        listOf(d.name(p.name), d.name(p.description), p.size, p.id).any { it.contains(query.trim(), true) }
-    }
-    if (matches.isEmpty()) Text(d.text("noResults"))
-    AdaptiveGrid(matches, columnsFor = { width ->
-        when { width >= 900.dp -> 3; width >= 570.dp -> 2; else -> 1 }
-    }) { product, modifier ->
-        Card(onClick = { details(product) }, modifier = modifier) {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ProductInfo(product, catalog.currency, d)
-                Text(d.text("details"), color = MaterialTheme.colorScheme.primary)
-            }
+class ProductImageView(private val product: Product, private val d: Display) : View {
+    @Composable
+    override fun onRender() {
+        val url = product.imageUrl ?: return
+        val bitmap by produceState<ImageBitmap?>(null, url) {
+            value = null
+            try {
+                val bytes: ByteArray = http.get(resolveUrl(url)).body()
+                value = org.jetbrains.skia.Image.makeFromEncoded(bytes).toComposeImageBitmap()
+            } catch (e: CancellationException) { throw e }
+            catch (_: Exception) { value = null }
         }
+        bitmap?.let { Image(it, d.name(product.name), Modifier.fillMaxWidth().height(150.dp), contentScale = ContentScale.Fit) }
+    }
+}
+
+class ProductInfoView(private val p: Product, private val currency: String, private val d: Display) : View {
+    @Composable
+    override fun onRender() {
+        ProductImageView(p, d).onRender()
+        Text(d.name(p.name), style = MaterialTheme.typography.titleLarge)
+        Text(d.name(p.description))
+        Text(p.size + " · " + d.money(p.unitPrice, currency))
+    }
+}
+
+class CatalogueView(private val catalog: Catalog, private val d: Display, private val query: String, private val search: (String) -> Unit, private val details: (Product) -> Unit) : View {
+    @Composable
+    override fun onRender() {
+        OutlinedTextField(query, search, label = { Text(d.text("search")) }, singleLine = true)
+        val matches = catalog.products.filter { p ->
+            listOf(d.name(p.name), d.name(p.description), p.size, p.id).any { it.contains(query.trim(), true) }
+        }
+        if (matches.isEmpty()) Text(d.text("noResults"))
+        AdaptiveGridView(matches, columnsFor = { width ->
+            when { width >= 900.dp -> 3; width >= 570.dp -> 2; else -> 1 }
+        }, cell = { product, modifier ->
+            Card(onClick = { details(product) }, modifier = modifier) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ProductInfoView(product, catalog.currency, d).onRender()
+                    Text(d.text("details"), color = MaterialTheme.colorScheme.primary)
+                }
+            }
+        }).onRender()
     }
 }
