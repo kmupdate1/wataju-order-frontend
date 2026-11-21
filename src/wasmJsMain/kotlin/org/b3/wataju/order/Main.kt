@@ -28,11 +28,13 @@ class StoreApplicationView : org.b3.foundation.ui.view.View {
         var theme by remember { mutableStateOf(preference("wataju.theme").takeIf { it in listOf("dark","light") } ?: "system") }
         var attempt by remember { mutableIntStateOf(0) }
         var strings by remember { mutableStateOf(emptyMap<String,String>()) }
+        var readyLanguage by remember { mutableStateOf<String?>(null) }
         var catalog by remember { mutableStateOf<Catalog?>(null) }
         var family by remember { mutableStateOf<FontFamily?>(null) }
         var failed by remember { mutableStateOf(false) }
         LaunchedEffect(lang, attempt) {
             failed = false
+            readyLanguage = null
             catalog = null
             try {
                 val settings = loadConfig()
@@ -45,6 +47,7 @@ class StoreApplicationView : org.b3.foundation.ui.view.View {
                 strings = loadStrings(lang)
                 setPage(lang, settings.storeName.localized(lang, settings.defaultLocale))
                 catalog = loadCatalog(settings, lang)
+                readyLanguage = lang
 
             } catch (e: CancellationException) { throw e }
             catch (e: Exception) { failed = true }
@@ -64,7 +67,7 @@ class StoreApplicationView : org.b3.foundation.ui.view.View {
         appearance.Apply {
             surface.Apply {
                 val items = catalog
-                if (items == null) {
+                if (items == null || readyLanguage != lang) {
                     Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         if (failed) {
                             Text(strings["error"] ?: if (lang == "en") "Could not open the store." else "店舗を開けませんでした。")
@@ -75,7 +78,7 @@ class StoreApplicationView : org.b3.foundation.ui.view.View {
                     val services = remember(config, items, lang) { StoreServices(config!!, items, lang) }
                     val shell = remember(services) {
                         StorefrontShell(items, config!!, services,
-                            Display(strings::getValue, lang, config!!.defaultLocale), { theme },
+                            Display({ key -> strings.getValue(key) }, lang, config!!.defaultLocale), { theme },
                             onLanguage = { lang = it; savePreference("wataju.locale", it) },
                             onTheme = { theme = it; savePreference("wataju.theme", it) })
                     }
