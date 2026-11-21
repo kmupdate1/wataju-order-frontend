@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -28,7 +28,7 @@ jobs:
           if-no-files-found: error
       - run: |
           python3 -m venv .qa
-          .qa/bin/pip install playwright==1.51.0
+          .qa/bin/pip install playwright==1.51.0 Pillow==11.1.0
           .qa/bin/playwright install --with-deps chromium
           .qa/bin/python tests/browser.py
           sudo apt-get install -y tesseract-ocr

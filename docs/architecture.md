@@ -1,44 +1,43 @@
-# 現行foundation統合
+# B3共通基盤と綿重注文の境界
 
-現在の起動・View・ライフサイクル構成は [foundation-integration.md](foundation-integration.md) を参照してください。以下は抽出元の境界とAgriOS比較の記録です。
+[Notionの設計決定](https://app.notion.com/p/4190d554f32d81eb9c15e8481c73fa9e)、AgriOSのクラス階層設計、および [kmp-application-foundation](https://github.com/BlueBikeBase-Inc/kmp-application-foundation) を基に構成する。foundationの固定版、互換性、更新手順は [foundation-integration.md](foundation-integration.md) に記載。
 
-# B3 共通部品と綿重注文の境界
+| モジュール | 責務 | 依存先 |
+| --- | --- | --- |
+| foundation-core | 上流のApplication、Feature、ライフサイクル | Kotlin |
+| foundation-localization | 上流の言語型・Localization機能 | foundation-core |
+| foundation-ui | 上流のRenderable / View / ViewLayer、UI登録、テーマ・Surface・Localization階層 | foundation-localization、Compose |
+| b3-foundation | 言語タグ照合と翻訳フォールバック。上流がまだ提供しない補助ポリシー | Kotlin |
+| b3-ui | 適応レイアウト、実行ボタン。綿重・AgriOSの型は参照しない | foundation-ui、Compose |
+| order-application | 注文モデル、ポート、Checkout、OrderController | Kotlin、serialization |
+| root Webアプリ | Web起動、画面、綿重ブランド、REST、ブラウザー保存、設定読込 | 上記の共通モジュール |
 
-設計の参照元は AgriOS の [feature/cloud-ready-dashboard、a30e2c3](https://github.com/kmupdate1/agrios_ui_of_kmp/tree/a30e2c3addb1f426a45ee37425f4bc693e26cb1f)。ブランチ先端のコミット日時で比較して選択した。
+## 起動と描画
 
-| AgriOS で参考にした箇所 | 綿重での実装 |
-| --- | --- |
-| application の契約と ui-system の実装を分離 | :order-application にモデル・注文ポート・ユースケースを置く。HTTP、ブラウザー保存、Compose はアプリ側 |
-| DashboardController / DashboardUiState | OrderController が確認前・受付結果待ち・完了を遷移する。UI は状態を描画し、再送・編集可否を反映 |
-| ContainerView と ContentView の区別 | :b3-ui の AdaptiveNavigation・AdaptiveGrid が配置を担当。画面名・操作・商品カード・ブランド色は呼び出し側が指定 |
-| PlatformLocale と言語タグの解決 | :b3-foundation の LocalePolicy が候補照合・優先順位を担当。ブラウザー言語取得と対応言語リストは製品側 |
+`main()`は`WasmJsMain : Bootable`へ委譲する。起動オブジェクトがfoundationの`UiApplication`に機能を登録し、`LifecycleController`を介して作成・開始する。ブラウザーの可視性とページ復帰で停止・再開し、Compositionの破棄でリスナーとHTTPクライアントを片付ける。
 
-## ビルド時の依存
+主要UIは`View.onRender()`を実装する型。`StoreApplicationView`は設定・翻訳・フォント・カタログを読み込み、セッションごとに`StorefrontShell`を保持する。Shellは画面遷移・通信中状態・イベントの接続を担当し、個別Screenへ現在の値とコールバックを渡す。画面・ボタンのコンストラクターでは通信しない。テーマ再描画で注文処理や機能登録を再実行しない。
 
-Web アプリ → :order-application、:b3-foundation、:b3-ui。共通モジュールは綿重・AgriOS のモデルを参照しない。:order-application は Kotlin と serialization のみで JVM / Wasm にコンパイルする。Web の StoreServices が REST / デモの実装、カート保存先、注文コントローラーを組み立てる。
+`Renderable → View → ExecuteButtonView → AddToCartButtonView / ConfirmOrderButtonView`が契約・共通動作・業務上の意図の境界。Material標準部品がフォーカスや無効状態を処理し、ブランド配色とTypographyはfoundationの`MaterialThemeLayer`へ注入する。
 
-注文を送信する直前にキーを保存する。通信が途切れた場合は同じキーで受付を再確認し、この間は編集をロックする。サーバーが見積もり失効を明示した場合はキーと見積もりを破棄し、配送先画面へ戻る。既存のブラウザー保存キーと API 契約は継続利用する。
+## 注文処理と保存
 
-## 別の KMP プロジェクトから参照する
+`StoreServices`がREST / デモの実装、カート保存先、注文コントローラーを組み立てる。UIは価格を確定せず、サーバーから返る見積もりスナップショットを表示する。
 
-綿重のリポジトリをバージョン固定で隣にチェックアウトし、利用側の settings.gradle.kts に必要なモジュールを登録する。利用側は Kotlin Multiplatform、Compose Compiler、Compose Multiplatform プラグインのバージョンを供給する。
+送信前にキーを保存し、通信断では同じキーで再送する。受付結果が不明な間は編集・言語切替をロックする。見積もり失効が明示された場合は再見積もりへ戻す。既存のブラウザー保存キー・API契約を継続利用する。
+
+設定・商品データは外部JSON/APIから注入する。翻訳XMLの所有者は注文アプリ。商品名や説明の翻訳はカタログデータの責務。UIの言語選択とサーバーへのAccept-Languageを一致させる。
+
+## 別のKMPプロジェクトから利用する
+
+再利用元をコミット固定で隣にチェックアウトする。既存foundationが同じパッケージを提供している場合は、その依存を使い、二重登録しない。まだ利用していない場合は次のモジュールを登録する。
 
 ```kotlin
-include(":b3-foundation", ":b3-ui")
-project(":b3-foundation").projectDir = file("../wataju-order-frontend/b3-foundation")
-project(":b3-ui").projectDir = file("../wataju-order-frontend/b3-ui")
-```
-
-これらのビルド定義が提供するターゲットは JVM / Wasm。利用側の同じターゲットのソースセットに `implementation(project(":b3-foundation"))` や `implementation(project(":b3-ui"))` を追加する。Web のアプリや注文モジュールへの依存は不要。
-
-AgriOS のように Android / iOS も同時にコンパイルする場合は、既存の KMP ライブラリの commonMain から同じソースディレクトリを参照する方法もある。どちらか一方の方法を選ぶ。
-
-```kotlin
-// AgriOS の ui-system/build.gradle.kts 内。パスは利用側のルートから解決する。
-kotlin.sourceSets.commonMain {
-    kotlin.srcDir(rootProject.file("../wataju-order-frontend/b3-foundation/src/commonMain/kotlin"))
-    kotlin.srcDir(rootProject.file("../wataju-order-frontend/b3-ui/src/commonMain/kotlin"))
+val sharedRoot = file("../wataju-order-frontend")
+listOf("foundation-core", "foundation-localization", "foundation-ui", "b3-foundation", "b3-ui").forEach { module ->
+    include(":$module")
+    project(":$module").projectDir = sharedRoot.resolve(module)
 }
 ```
 
-AgriOS の地域・文字体系別の対応方針（例 zh-Hans → zh-CN）はその製品の言語マッピングで指定する。農業コマンド、注文金額、商品・ゾーンのモデルはそれぞれの製品が所有する。
+利用側で互換性のあるKotlin / Composeプラグインを供給し、必要なソースセットに`implementation(project(":b3-ui"))`などを追加する。現在のビルドアダプターの対象はJVM / Wasm。Android / iOSは上流のターゲット設定とツールチェーンを統合してから検証する。注文・農業それぞれのモデルや業務命令をB3共通UIへ持ち込まない。

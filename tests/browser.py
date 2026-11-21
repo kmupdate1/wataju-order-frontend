@@ -2,6 +2,7 @@
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 from threading import Thread
 
@@ -15,7 +16,11 @@ server = ThreadingHTTPServer(("127.0.0.1", 0), partial(SimpleHTTPRequestHandler,
 Thread(target=server.serve_forever, daemon=True).start()
 try:
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(args=["--enable-unsafe-swiftshader"])
+        options = dict(args=["--enable-unsafe-swiftshader"])
+        if os.environ.get("WATAJU_CHROMIUM_PATH"):
+            options.update(executable_path=os.environ["WATAJU_CHROMIUM_PATH"],
+                           args=["--enable-unsafe-swiftshader", "--single-process", "--no-zygote"])
+        browser = playwright.chromium.launch(**options)
         for lang, title, width in [("ja", "綿重商店", 390), ("en", "Wataju Shoten", 1280)]:
             page = browser.new_page(locale=lang, viewport={"width": width, "height": 844})
             errors, fonts = [], []
@@ -30,7 +35,7 @@ try:
             page.wait_for_timeout(1000)
             page.screenshot(path=shots / f"{lang}.png")
             assert not errors, errors
-            page.close()
+
         # Exercise the shared navigation through the same-view-width mobile shell.
         mobile = browser.new_page(locale="ja", viewport={"width": 390, "height": 844})
         settings = json.loads((dist / "config.json").read_text())
@@ -45,7 +50,7 @@ try:
             for _ in range(3):
                 mobile.wait_for_timeout(300)
                 mobile.mouse.click(273, 802)
-        mobile.close()
+
         browser.close()
 finally:
     server.shutdown()

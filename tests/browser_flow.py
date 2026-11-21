@@ -12,6 +12,7 @@ from pathlib import Path
 import subprocess
 from threading import Thread
 from playwright.sync_api import sync_playwright
+from PIL import Image
 
 root = Path(__file__).resolve().parents[1]
 dist = root / 'build/dist/wasmJs/productionExecutable'
@@ -23,18 +24,25 @@ def click_text(page, label):
     wanted = label.lower().split()
     for _ in range(12):
         page.wait_for_timeout(250)
-        result = subprocess.run(['tesseract', 'stdin', 'stdout', '--psm', '11', 'tsv'],
-                                input=page.screenshot(), capture_output=True, check=True)
-        words = [r for r in csv.DictReader(io.StringIO(result.stdout.decode()), delimiter='\t') if r['text'].strip()]
-        for start in range(len(words) - len(wanted) + 1):
-            group = words[start:start + len(wanted)]
-            if [w['text'].lower() for w in group] == wanted:
-                left = min(int(w['left']) for w in group)
-                top = min(int(w['top']) for w in group)
-                right = max(int(w['left']) + int(w['width']) for w in group)
-                bottom = max(int(w['top']) + int(w['height']) for w in group)
-                page.mouse.click((left + right) / 2, (top + bottom) / 2)
-                return
+        screenshot = page.screenshot()
+        # OCR otherwise drops light filled buttons against a dark surface.
+        normalized = io.BytesIO()
+        Image.open(io.BytesIO(screenshot)).convert('L').point(
+            lambda value: 255 if value < 40 or value > 140 else 0
+        ).save(normalized, format='PNG')
+        for pixels in (screenshot, normalized.getvalue()):
+            result = subprocess.run(['tesseract', 'stdin', 'stdout', '--psm', '11', 'tsv'],
+                                    input=pixels, capture_output=True, check=True)
+            words = [r for r in csv.DictReader(io.StringIO(result.stdout.decode()), delimiter='\t') if r['text'].strip()]
+            for start in range(len(words) - len(wanted) + 1):
+                group = words[start:start + len(wanted)]
+                if [w['text'].lower() for w in group] == wanted:
+                    left = min(int(w['left']) for w in group)
+                    top = min(int(w['top']) for w in group)
+                    right = max(int(w['left']) + int(w['width']) for w in group)
+                    bottom = max(int(w['top']) + int(w['height']) for w in group)
+                    page.mouse.click((left + right) / 2, (top + bottom) / 2)
+                    return
     page.screenshot(path=shots / 'flow-failure.png')
     raise AssertionError(f'Rendered label not found: {label}')
 
