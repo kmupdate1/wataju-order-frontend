@@ -90,6 +90,8 @@ try:
         assert not errors, errors
 
         checkout = browser.new_page(locale='en', viewport=dict(width=1280, height=900))
+        # Use an explicit appearance: contexts must not rely on prior page preferences.
+        checkout.add_init_script("localStorage.setItem('wataju.theme', 'dark');")
         checkout.on('pageerror', lambda e: errors.append(str(e)))
         settings = json.loads((dist / 'config.json').read_text())
         settings['orderApi'] = '/api/customer'
